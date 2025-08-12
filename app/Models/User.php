@@ -2,44 +2,45 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-use Laravel\Sanctum\HasApiTokens;
 
 class User extends Authenticatable
 {
-    use HasApiTokens, HasFactory, Notifiable;
+    use HasFactory, Notifiable;
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var array<int, string>
-     */
+    protected $table = 'users';
+    protected $primaryKey = 'usr_id';
+    public $incrementing = true;
+    protected $keyType = 'int';
+
     protected $fillable = [
-        'name',
-        'email',
-        'password',
+        'usr_name',
+        'usr_email',
+        'usr_password',
+        'usr_role_id',
+        'usr_major_id',
+        'usr_class_level_id',
     ];
 
-    /**
-     * The attributes that should be hidden for serialization.
-     *
-     * @var array<int, string>
-     */
     protected $hidden = [
-        'password',
+        'usr_password',
         'remember_token',
     ];
 
-    /**
-     * The attributes that should be cast.
-     *
-     * @var array<string, string>
-     */
-    protected $casts = [
-        'email_verified_at' => 'datetime',
-        'password' => 'hashed',
-    ];
+    public function role()
+    {
+        return $this->belongsTo(Role::class, 'usr_role_id', 'rl_id');
+    }
+
+    public function major()
+    {
+        return $this->belongsTo(Major::class, 'usr_major_id', 'major_id');
+    }
+
+    public function classLevel()
+    {
+        return $this->belongsTo(ClassLevel::class, 'usr_class_level_id', 'class_level_id');
+    }
 }
