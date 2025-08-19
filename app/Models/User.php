@@ -2,18 +2,15 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
 class User extends Authenticatable
 {
-    use HasFactory, Notifiable;
+    use Notifiable;
 
-    protected $table = 'users';
-    protected $primaryKey = 'usr_id';
-    public $incrementing = true;
-    protected $keyType = 'int';
+    protected $table = 'users'; // tabel
+    protected $primaryKey = 'usr_id'; // PK
 
     protected $fillable = [
         'usr_name',
@@ -22,25 +19,19 @@ class User extends Authenticatable
         'usr_role_id',
         'usr_major_id',
         'usr_class_level_id',
+        'usr_created_by',
+        'usr_updated_by',
+        'usr_deleted_by',
+        'usr_sys_note',
     ];
 
     protected $hidden = [
         'usr_password',
-        'remember_token',
     ];
 
-    public function role()
+    // kasih tau Laravel kalau password field kita "usr_password"
+    public function getAuthPassword()
     {
-        return $this->belongsTo(Role::class, 'usr_role_id', 'rl_id');
-    }
-
-    public function major()
-    {
-        return $this->belongsTo(Major::class, 'usr_major_id', 'major_id');
-    }
-
-    public function classLevel()
-    {
-        return $this->belongsTo(ClassLevel::class, 'usr_class_level_id', 'class_level_id');
+        return $this->usr_password;
     }
 }

@@ -19,25 +19,7 @@ class UsersTableSeeder extends Seeder
                 'usr_role_id' => 1,
                 'created_at' => now(),
                 'updated_at' => now(),
-            ],
-            [
-                'usr_id' => 2,
-                'usr_name' => 'Teacher',
-                'usr_email' => 'teacher@gmail.com',
-                'usr_password' => Hash::make('12345678'),
-                'usr_role_id' => 2,
-                'created_at' => now(),
-                'updated_at' => now(),
-            ],
-            [
-                'usr_id' => 3,
-                'usr_name' => 'Student',
-                'usr_email' => 'student@gmail.com',
-                'usr_password' => Hash::make('12345678'),
-                'usr_role_id' => 3,
-                'created_at' => now(),
-                'updated_at' => now(),
-            ],
+            ]
         ]);
     }
 }

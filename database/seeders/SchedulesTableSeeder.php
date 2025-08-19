@@ -11,7 +11,7 @@ class SchedulesTableSeeder extends Seeder
     {
         DB::table('schedules')->insert([
             [
-                'schedule_user_id' => 2,
+                'schedule_user_id' => 1,
                 'schedule_subject_id' => 1,
                 'schedule_class_level_id' => 1,
                 'schedule_day' => 'Monday',
@@ -25,7 +25,7 @@ class SchedulesTableSeeder extends Seeder
                 'updated_at' => now(),
             ],
             [
-                'schedule_user_id' => 2,
+                'schedule_user_id' => 1,
                 'schedule_subject_id' => 3,
                 'schedule_class_level_id' => 2,
                 'schedule_day' => 'Tuesday',

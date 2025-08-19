@@ -11,7 +11,7 @@ class NotificationsTableSeeder extends Seeder
     {
         DB::table('notifications')->insert([
             [
-                'notification_user_id' => 3,
+                'notification_user_id' => 1,
                 'notification_type' => 'Info',
                 'notification_message' => 'Welcome to the system!',
                 'notification_read_at' => null,
@@ -22,7 +22,7 @@ class NotificationsTableSeeder extends Seeder
                 'updated_at' => now(),
             ],
             [
-                'notification_user_id' => 2,
+                'notification_user_id' => 1,
                 'notification_type' => 'Reminder',
                 'notification_message' => 'You have a class tomorrow.',
                 'notification_read_at' => null,
