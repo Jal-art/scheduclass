@@ -2,25 +2,24 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use App\Models\User;
+use App\Models\Teacher;
+use App\Models\Subject;
+use App\Models\Schedule;
 
 class DashboardController extends Controller
 {
-    public function __construct()
-    {
-        $this->middleware('auth');
-    }
-
     public function index()
     {
-        $data = [
-            'total_users' => User::count(),
-            'new_users_today' => User::whereDate('created_at', today())->count(),
-            'active_users' => User::whereNotNull('email_verified_at')->count(),
-            'recent_users' => User::latest()->take(5)->get(),
+        $user = Auth::user();
+        $stats = [
+            'users'     => User::count(),
+            'teachers'  => class_exists(Teacher::class) ? Teacher::count() : 0,
+            'subjects'  => class_exists(Subject::class) ? Subject::count() : 0,
+            'schedules' => class_exists(Schedule::class) ? Schedule::count() : 0,
         ];
 
-        return view('dashboard', $data);
+        return view('dashboard', compact('user','stats'));
     }
 }

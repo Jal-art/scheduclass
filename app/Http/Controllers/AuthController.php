@@ -2,84 +2,74 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\User;
+use App\Models\Role;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
-use App\Models\User;
-use Illuminate\Support\Facades\Auth as FacadesAuth;
 
 class AuthController extends Controller
 {
-    /**
-     * Show login form
-     */
     public function showLoginForm()
     {
+        // Pakai layout auth (tanpa sidebar)
         return view('auth.login');
     }
 
-    /**
-     * Handle login process
-     */
     public function login(Request $request)
     {
-        $credentials = $request->validate([
-            "usr_email" => "required | max:255",
-            "usr_password" => "required | max:255",
+        $request->validate([
+            'email'    => ['required','email'],
+            'password' => ['required'],
         ]);
-               $user = User::where('usr_email', $request->usr_email)->first();
 
-        if ($user && Hash::check($request->usr_password, $user->usr_password)) {
-            Auth::login($user);
+        // Auth::attempt bisa pakai kolom custom untuk pencarian user
+        $credentials = [
+            'usr_email' => $request->email,
+            'password'  => $request->password, // akan dicocokkan dengan getAuthPassword()
+        ];
+
+        if (Auth::attempt($credentials)) {
             $request->session()->regenerate();
-
-            return redirect()->intended('/dashboard'); // ubah sesuai route kamu
+            return redirect()->intended(route('dashboard'));
         }
-        return back()->withErrors([
-            'usr_email' => 'Email atau password salah.',
-        ])->onlyInput('usr_email');
+
+        return back()->withErrors(['email' => 'Email atau password salah'])->withInput();
     }
 
-    /**
-     * Show register form
-     */
     public function showRegisterForm()
     {
-        return view('auth.register');
+        // tampilkan role Siswa & Guru saja (sesuaikan nama di seeds kamu)
+        $roles = Role::whereIn('rl_name', ['Student','Siswa','Guru','Teacher'])->get();
+        return view('auth.register', compact('roles'));
     }
 
-    /**
-     * Handle register process
-     */
     public function register(Request $request)
-{
-    $request->validate([
-        'usr_name' => 'required|string|max:255',
-        'usr_email' => 'required|email|unique:users,usr_email',
-        'usr_password' => 'required|min:8|confirmed',
-        'usr_role_id' => 'required|in:2,3', // 2 = siswa, 3 = guru (contoh)
-    ]);
+    {
+        $request->validate([
+            'usr_name'                  => ['required','string','max:255'],
+            'usr_email'                 => ['required','email','max:255','unique:users,usr_email'],
+            'password'                  => ['required','min:6','confirmed'],
+            'usr_role_id'               => ['required','exists:roles,rl_id'],
+        ]);
 
-    User::create([
-        'usr_name' => $request->usr_name,
-        'usr_email' => $request->usr_email,
-        'usr_password' => Hash::make($request->usr_password),
-        'usr_role_id' => $request->usr_role_id,
-    ]);
+        $user = User::create([
+            'usr_name'        => $request->usr_name,
+            'usr_email'       => $request->usr_email,
+            'usr_password'    => Hash::make($request->password),
+            'usr_role_id'     => $request->usr_role_id,
+        ]);
 
-    return redirect()->route('login')->with('success', 'Akun berhasil dibuat, silakan login!');
-}
+        Auth::login($user);
 
+        return redirect()->route('dashboard');
+    }
 
-    /**
-     * Handle logout
-     */
     public function logout(Request $request)
     {
         Auth::logout();
         $request->session()->invalidate();
         $request->session()->regenerateToken();
-
-        return redirect('/login');
+        return redirect()->route('login');
     }
 }

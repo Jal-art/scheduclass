@@ -9,26 +9,30 @@ class Teacher extends Model
 {
     use HasFactory;
 
-    protected $table = 'teacher_subjects';
-    protected $primaryKey = 'ts_id';
+    // tabel yang benar harusnya 'teachers'
+    protected $table = 'teachers';
+    protected $primaryKey = 'teacher_id';
 
     protected $fillable = [
-        'ts_teacher_id',
-        'ts_subject_id',
+        'user_id',   // relasi ke users
+        'major_id',  // jurusan guru
     ];
 
-    public function teacher()
+    // relasi ke user
+    public function user()
     {
-        return $this->belongsTo(User::class, 'ts_teacher_id', 'usr_id');
+        return $this->belongsTo(User::class, 'user_id', 'usr_id');
     }
 
-    public function subject()
+    // relasi ke jurusan
+    public function major()
     {
-        return $this->belongsTo(Subject::class, 'ts_subject_id', 'subject_id');
+        return $this->belongsTo(Major::class, 'major_id', 'major_id');
     }
 
-    public function schedules()
+    // relasi ke teacher_subjects
+    public function teacherSubjects()
     {
-        return $this->hasMany(Schedule::class, 'sch_teacher_subject_id', 'ts_id');
+        return $this->hasMany(TeacherSubject::class, 'ts_teacher_id', 'teacher_id');
     }
 }

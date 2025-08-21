@@ -15,7 +15,7 @@ class UsersTableSeeder extends Seeder
                 'usr_id' => 1,
                 'usr_name' => 'Kurikulum',
                 'usr_email' => 'kurikulum@gmail.com',
-                'usr_password' => Hash::make('12345678'),
+                'usr_password' => Hash::make('11111111'),
                 'usr_role_id' => 1,
                 'created_at' => now(),
                 'updated_at' => now(),
