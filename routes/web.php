@@ -15,6 +15,7 @@ use App\Http\Controllers\NotificationController;
 
 Route::get('/', fn () => redirect()->route('login'));
 
+
 // Auth
 Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
 Route::post('/login', [AuthController::class, 'login']);
