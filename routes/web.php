@@ -22,9 +22,10 @@ Route::get('/register', [AuthController::class, 'showRegisterForm'])->name('regi
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
-// Dashboard (setelah login)
+// Dashboard
 Route::get('/dashboard', [DashboardController::class, 'index'])
-    ->name('dashboard')->middleware('auth');
+    ->middleware('auth')
+    ->name('dashboard');
 
 // Resource CRUD (pakai middleware auth)
 Route::middleware('auth')->group(function () {

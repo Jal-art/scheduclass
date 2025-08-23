@@ -1,6 +1,7 @@
 @extends('layouts.app')
 
 @section('content')
+
 <div class="container-fluid">
   <h4 class="mb-3">Selamat datang, {{ $user->usr_name }}</h4>
   <p class="text-muted">Role: {{ optional($user->role)->rl_name ?? '-' }}</p>

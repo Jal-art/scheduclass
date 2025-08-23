@@ -3,42 +3,69 @@
 namespace App\Http\Controllers;
 
 use App\Models\Schedule;
+use App\Models\User;
+use App\Models\Subject;
+use App\Models\ClassLevel;
 use Illuminate\Http\Request;
 
 class ScheduleController extends Controller
 {
     public function index()
     {
-        return Schedule::with(['teacherSubject', 'classLevel'])->get();
+        $schedules = Schedule::with(['teacher', 'subject', 'classLevel'])->get();
+        return view('schedules.index', compact('schedules'));
+    }
+
+    public function create()
+    {
+        $teachers = User::all();
+        $subjects = Subject::all();
+        $classLevels = ClassLevel::all();
+        return view('schedules.create', compact('teachers', 'subjects', 'classLevels'));
     }
 
     public function store(Request $request)
     {
         $request->validate([
-            'teacher_subject_id' => 'required|exists:teacher_subjects,teacher_subject_id',
-            'class_level_id' => 'required|exists:class_levels,class_level_id',
-            'day' => 'required|string|max:10',
-            'start_time' => 'required|date_format:H:i',
-            'end_time' => 'required|date_format:H:i|after:start_time'
+            'schedule_user_id' => 'required',
+            'schedule_subject_id' => 'required',
+            'schedule_class_level_id' => 'required',
+            'schedule_day' => 'required',
+            'schedule_start_time' => 'required',
+            'schedule_end_time' => 'required',
+            'schedule_room' => 'required',
         ]);
 
-        return Schedule::create($request->all());
+        Schedule::create($request->all());
+        return redirect()->route('schedules.index')->with('success', 'Schedule created successfully.');
     }
 
-    public function show($id)
+    public function edit($id)
     {
-        return Schedule::with(['teacherSubject', 'classLevel'])->findOrFail($id);
+        $schedule = Schedule::findOrFail($id);
+        $teachers = User::all();
+        $subjects = Subject::all();
+        $classLevels = ClassLevel::all();
+        return view('schedules.edit', compact('schedule', 'teachers', 'subjects', 'classLevels'));
     }
 
     public function update(Request $request, $id)
     {
         $schedule = Schedule::findOrFail($id);
         $schedule->update($request->all());
-        return $schedule;
+        return redirect()->route('schedules.index')->with('success', 'Schedule updated successfully.');
     }
+    public function show($id)
+{
+    $schedule = Schedule::with(['teacher', 'subject', 'classLevel'])->findOrFail($id);
+    return view('schedules.show', compact('schedule'));
+}
+
 
     public function destroy($id)
     {
-        return Schedule::destroy($id);
+        $schedule = Schedule::findOrFail($id);
+        $schedule->delete();
+        return redirect()->route('schedules.index')->with('success', 'Schedule deleted successfully.');
     }
 }

@@ -18,6 +18,7 @@ class DatabaseSeeder extends Seeder
     MajorsTableSeeder::class,
     ClassLevelsTableSeeder::class,
     SubjectsTableSeeder::class,
+    TeachersSubjectsTableSeeder::class,
     TeachersTableSeeder::class,  // ini diperbaiki
     SchedulesTableSeeder::class,
     NotificationsTableSeeder::class,

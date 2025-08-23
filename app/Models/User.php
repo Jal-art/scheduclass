@@ -51,4 +51,13 @@ class User extends Authenticatable
     {
         return $this->belongsTo(ClassLevel::class, 'usr_class_level_id', 'class_level_id');
     }
+    public function teacherSubjects()
+    {
+        return $this->hasMany(TeacherSubject::class, 'ts_teacher_id', 'usr_id');
+    }
+    public function schedules()
+{
+    return $this->hasMany(Schedule::class, 'schedule_user_id', 'usr_id');
+}
+
 }

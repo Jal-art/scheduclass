@@ -12,7 +12,6 @@ class AuthController extends Controller
 {
     public function showLoginForm()
     {
-        // Pakai layout auth (tanpa sidebar)
         return view('auth.login');
     }
 
@@ -23,10 +22,9 @@ class AuthController extends Controller
             'password' => ['required'],
         ]);
 
-        // Auth::attempt bisa pakai kolom custom untuk pencarian user
         $credentials = [
             'usr_email' => $request->email,
-            'password'  => $request->password, // akan dicocokkan dengan getAuthPassword()
+            'password'  => $request->password,
         ];
 
         if (Auth::attempt($credentials)) {
@@ -39,7 +37,6 @@ class AuthController extends Controller
 
     public function showRegisterForm()
     {
-        // tampilkan role Siswa & Guru saja (sesuaikan nama di seeds kamu)
         $roles = Role::whereIn('rl_name', ['Student','Siswa','Guru','Teacher'])->get();
         return view('auth.register', compact('roles'));
     }
@@ -47,22 +44,21 @@ class AuthController extends Controller
     public function register(Request $request)
     {
         $request->validate([
-            'usr_name'                  => ['required','string','max:255'],
-            'usr_email'                 => ['required','email','max:255','unique:users,usr_email'],
-            'password'                  => ['required','min:6','confirmed'],
-            'usr_role_id'               => ['required','exists:roles,rl_id'],
+            'usr_name'      => ['required','string','max:255'],
+            'usr_email'     => ['required','email','max:255','unique:users,usr_email'],
+            'password'      => ['required','min:6','confirmed'],
+            'usr_role_id'   => ['required','exists:roles,rl_id'],
         ]);
 
-        $user = User::create([
-            'usr_name'        => $request->usr_name,
-            'usr_email'       => $request->usr_email,
-            'usr_password'    => Hash::make($request->password),
-            'usr_role_id'     => $request->usr_role_id,
+        User::create([
+            'usr_name'     => $request->usr_name,
+            'usr_email'    => $request->usr_email,
+            'usr_password' => Hash::make($request->password),
+            'usr_role_id'  => $request->usr_role_id,
         ]);
 
-        Auth::login($user);
-
-        return redirect()->route('dashboard');
+        // setelah daftar, kembali ke login
+        return redirect()->route('login')->with('success', 'Pendaftaran berhasil, silakan login.');
     }
 
     public function logout(Request $request)
