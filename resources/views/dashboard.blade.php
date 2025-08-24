@@ -1,52 +1,52 @@
-@extends('layouts.app')
+<?php
 
-@section('content')
+namespace App\Http\Controllers;
 
-<div class="container-fluid">
-  <h4 class="mb-3">Selamat datang, {{ $user->usr_name }}</h4>
-  <p class="text-muted">Role: {{ optional($user->role)->rl_name ?? '-' }}</p>
+use Illuminate\Support\Facades\Auth;
+use App\Models\User;
+use App\Models\Subject;
+use App\Models\Schedule;
+use App\Models\ClassLevel;
+use App\Models\Major;
 
-  <div class="row">
-    <div class="col-lg-3 col-6">
-      <div class="small-box bg-info">
-        <div class="inner">
-          <h3>{{ $stats['users'] }}</h3>
-          <p>Users</p>
-        </div>
-        <div class="icon"><i class="fas fa-users"></i></div>
-        <a href="{{ route('users.index') }}" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
-      </div>
-    </div>
-    <div class="col-lg-3 col-6">
-      <div class="small-box bg-success">
-        <div class="inner">
-          <h3>{{ $stats['teachers'] }}</h3>
-          <p>Teachers</p>
-        </div>
-        <div class="icon"><i class="fas fa-chalkboard-teacher"></i></div>
-        <a href="{{ route('teachers.index') }}" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
-      </div>
-    </div>
-    <div class="col-lg-3 col-6">
-      <div class="small-box bg-warning">
-        <div class="inner">
-          <h3>{{ $stats['subjects'] }}</h3>
-          <p>Subjects</p>
-        </div>
-        <div class="icon"><i class="fas fa-book"></i></div>
-        <a href="{{ route('subjects.index') }}" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
-      </div>
-    </div>
-    <div class="col-lg-3 col-6">
-      <div class="small-box bg-danger">
-        <div class="inner">
-          <h3>{{ $stats['schedules'] }}</h3>
-          <p>Schedules</p>
-        </div>
-        <div class="icon"><i class="fas fa-calendar-alt"></i></div>
-        <a href="{{ route('schedules.index') }}" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
-      </div>
-    </div>
-  </div>
-</div>
-@endsection
+class DashboardController extends Controller
+{
+    public function index()
+    {
+        $user = Auth::user();
+        
+        // Statistik untuk dashboard
+        $stats = [
+            'schedules' => Schedule::count(),
+            'teachers' => User::where('usr_role_id', 2)->count(), // Role Teacher
+            'students' => User::where('usr_role_id', 3)->count(), // Role Student  
+            'subjects' => Subject::count(),
+            'classLevels' => ClassLevel::count(),
+            'majors' => Major::count(),
+            'users' => User::count(),
+        ];
+
+        // Cek role user untuk menentukan dashboard mana yang ditampilkan
+        if ($user->usr_role_id == 1) { // Role Kurikulum/Admin
+            return view('dashboard.admin', compact('user', 'stats'));
+        } else { // Role Teacher atau Student
+            // Ambil jadwal untuk guru/siswa
+            $schedules = [];
+            if ($user->usr_role_id == 2) { // Teacher
+                $schedules = Schedule::with(['subject', 'classLevel'])
+                    ->where('schedule_user_id', $user->usr_id)
+                    ->orderBy('schedule_day')
+                    ->orderBy('schedule_start_time')
+                    ->get();
+            } elseif ($user->usr_role_id == 3) { // Student
+                $schedules = Schedule::with(['teacher', 'subject'])
+                    ->where('schedule_class_level_id', $user->usr_class_level_id)
+                    ->orderBy('schedule_day')
+                    ->orderBy('schedule_start_time')
+                    ->get();
+            }
+            
+            return view('dashboard.main', compact('user', 'stats', 'schedules'));
+        }
+    }
+}

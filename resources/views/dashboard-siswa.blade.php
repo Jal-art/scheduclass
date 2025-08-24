@@ -1,4 +1,4 @@
-@extends('adminlte::page')
+<!-- @extends('adminlte::page')
 
 @section('title', 'Dashboard Siswa')
 
@@ -40,4 +40,4 @@
         </table>
     </div>
 </div>
-@stop
+@stop -->
